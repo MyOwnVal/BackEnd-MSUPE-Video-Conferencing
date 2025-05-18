@@ -1,3 +1,9 @@
+# TODO: Improve transcription time.
+# TODO: Add prompt splitting for longer lectures.
+# TODO: Add better provider switching.
+# TODO: Add backup DeepSeek integration.
+
+
 import datetime
 import os
 import wave
