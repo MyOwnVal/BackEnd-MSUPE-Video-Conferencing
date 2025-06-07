@@ -1,162 +1,164 @@
 <!DOCTYPE html>
 <html lang="ru">
-<head>
-  <meta charset="UTF-8">
-  <title>Транскрипт лекции</title>
-  <script src="https://cdn.socket.io/4.0.1/socket.io.min.js"></script>
-  <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #f4f4f4;
-      color: #333;
-      margin: 0;
-      padding: 2em;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
+  <head>
+    <meta charset="UTF-8" />
+    <title>Транскрипт лекции</title>
+    <script src="https://cdn.socket.io/4.0.1/socket.io.min.js"></script>
+    <style>
+      body {
+        font-family: "Segoe UI", sans-serif;
+        background-color: #f4f4f4;
+        color: #333;
+        margin: 0;
+        padding: 2em;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
 
-    h1 {
-      font-weight: 500;
-      margin-bottom: 1em;
-      color: #222;
-    }
+      h1 {
+        font-weight: 500;
+        margin-bottom: 1em;
+        color: #222;
+      }
 
-    button {
-      background-color: #0057e7;
-      color: white;
-      border: none;
-      padding: 10px 18px;
-      margin: 5px;
-      border-radius: 6px;
-      font-size: 16px;
-      cursor: pointer;
-      transition: background 0.2s ease;
-    }
+      button {
+        background-color: #0057e7;
+        color: white;
+        border: none;
+        padding: 10px 18px;
+        margin: 5px;
+        border-radius: 6px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background 0.2s ease;
+      }
 
-    button:disabled {
-      background-color: #cccccc;
-      cursor: not-allowed;
-    }
+      button:disabled {
+        background-color: #cccccc;
+        cursor: not-allowed;
+      }
 
-    button:hover:not(:disabled) {
-      background-color: #0047c0;
-    }
+      button:hover:not(:disabled) {
+        background-color: #0047c0;
+      }
 
-    #status {
-      margin-top: 20px;
-      font-size: 1rem;
-      font-weight: 500;
-      color: #666;
-    }
+      #status {
+        margin-top: 20px;
+        font-size: 1rem;
+        font-weight: 500;
+        color: #666;
+      }
 
-    #partial {
-      margin-top: 1em;
-      font-style: italic;
-      color: #888;
-    }
+      #partial {
+        margin-top: 1em;
+        font-style: italic;
+        color: #888;
+      }
 
-    #text {
-      max-width: 800px;
-      width: 100%;
-      margin-top: 2em;
-      background: white;
-      padding: 1em 1.5em;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.05);
-    }
+      #text {
+        max-width: 800px;
+        width: 100%;
+        margin-top: 2em;
+        background: white;
+        padding: 1em 1.5em;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+      }
 
-    #text p {
-      margin-bottom: 1em;
-      line-height: 1.5;
-    }
-  </style>
-</head>
-<body>
-  <h1>🎤 Транскрипт лекции</h1>
+      #text p {
+        margin-bottom: 1em;
+        line-height: 1.5;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>🎤 Транскрипт лекции</h1>
 
-  <div>
-    <button id="start" disabled>▶️ Старт записи</button>
-    <button id="stop" disabled>⏹️ Стоп записи</button>
-    <button id="download" disabled>📥 Скачать транскрипт</button>
-    <button id="download-cleaned" disabled>📄 Скачать конспект</button>
-  </div>
+    <div>
+      <button id="start" disabled>▶️ Старт записи</button>
+      <button id="stop" disabled>⏹️ Стоп записи</button>
+      <button id="download" disabled>📥 Скачать транскрипт</button>
+      <button id="download-cleaned" disabled>📄 Скачать конспект</button>
+    </div>
 
-  <div id="status">⏳ Загрузка модели...</div>
-  <div id="partial"></div>
-  <div id="text"></div>
+    <div id="status">⏳ Загрузка модели...</div>
+    <div id="partial"></div>
+    <div id="text"></div>
 
-  <script>
-    const socket = io();
-    let audioContext;
-    let processor;
-    let recording = false;
-    const statusDiv = document.getElementById('status');
-    const textDiv = document.getElementById('text');
+    <script>
+      const socket = io();
+      let audioContext;
+      let processor;
+      let recording = false;
+      const statusDiv = document.getElementById("status");
+      const textDiv = document.getElementById("text");
 
-    socket.on("ready", () => {
-      statusDiv.innerText = "✅ Готово к записи!";
-      document.getElementById("start").disabled = false;
-    });
+      socket.on("ready", () => {
+        statusDiv.innerText = "✅ Готово к записи!";
+        document.getElementById("start").disabled = false;
+      });
 
-    document.getElementById('start').onclick = async () => {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      document.getElementById("start").onclick = async () => {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          audio: true,
+        });
 
-      audioContext = new AudioContext();
-      const source = audioContext.createMediaStreamSource(stream);
+        audioContext = new AudioContext();
+        const source = audioContext.createMediaStreamSource(stream);
 
-      processor = audioContext.createScriptProcessor(4096, 1, 1);
-      processor.onaudioprocess = (e) => {
-        if (!recording) return;
+        processor = audioContext.createScriptProcessor(4096, 1, 1);
+        processor.onaudioprocess = (e) => {
+          if (!recording) return;
 
-        const inputData = e.inputBuffer.getChannelData(0);
-        const int16Array = new Int16Array(inputData.length);
-        for (let i = 0; i < inputData.length; i++) {
-          int16Array[i] = inputData[i] * 0x7fff;
-        }
-        socket.emit('audio', int16Array.buffer);
+          const inputData = e.inputBuffer.getChannelData(0);
+          const int16Array = new Int16Array(inputData.length);
+          for (let i = 0; i < inputData.length; i++) {
+            int16Array[i] = inputData[i] * 0x7fff;
+          }
+          socket.emit("audio", int16Array.buffer);
+        };
+
+        source.connect(processor);
+        processor.connect(audioContext.destination);
+
+        recording = true;
+        document.getElementById("start").disabled = true;
+        document.getElementById("stop").disabled = false;
+        statusDiv.innerText = "🎙️ Идет запись...";
       };
 
-      source.connect(processor);
-      processor.connect(audioContext.destination);
+      document.getElementById("stop").onclick = () => {
+        recording = false;
+        socket.emit("stop");
+        processor.disconnect();
+        audioContext.close();
 
-      recording = true;
-      document.getElementById('start').disabled = true;
-      document.getElementById('stop').disabled = false;
-      statusDiv.innerText = '🎙️ Идет запись...';
-    };
+        document.getElementById("start").disabled = false;
+        document.getElementById("stop").disabled = true;
+        document.getElementById("download").disabled = false;
+        document.getElementById("download-cleaned").disabled = false;
+        statusDiv.innerText = "✅ Запись остановлена, транскрипт готов!";
+        document.getElementById("partial").innerText = "";
+      };
 
-    document.getElementById('stop').onclick = () => {
-      recording = false;
-      socket.emit('stop');
-      processor.disconnect();
-      audioContext.close();
+      document.getElementById("download").onclick = () => {
+        window.location.href = "/download";
+      };
 
-      document.getElementById('start').disabled = false;
-      document.getElementById('stop').disabled = true;
-      document.getElementById('download').disabled = false;
-      document.getElementById('download-cleaned').disabled = false;
-      statusDiv.innerText = '✅ Запись остановлена, транскрипт готов!';
-      document.getElementById('partial').innerText = '';
-    };
+      document.getElementById("download-cleaned").onclick = () => {
+        window.location.href = "/download_cleaned";
+      };
 
-    document.getElementById('download').onclick = () => {
-      window.location.href = '/download';
-    };
+      socket.on("text", (data) => {
+        const p = document.createElement("p");
+        p.innerHTML = `<b>[${data.time}]</b> ${data.text}`;
+        textDiv.appendChild(p);
+      });
 
-    document.getElementById('download-cleaned').onclick = () => {
-      window.location.href = '/download_cleaned';
-    };
-
-    socket.on('text', (data) => {
-      const p = document.createElement('p');
-      p.innerHTML = `<b>[${data.time}]</b> ${data.text}`;
-      textDiv.appendChild(p);
-    });
-
-    socket.on('partial_text', (data) => {
-      document.getElementById("partial").innerText = `🗣 ${data.text}`;
-    });
-  </script>
-</body>
+      socket.on("partial_text", (data) => {
+        document.getElementById("partial").innerText = `🗣 ${data.text}`;
+      });
+    </script>
+  </body>
 </html>
