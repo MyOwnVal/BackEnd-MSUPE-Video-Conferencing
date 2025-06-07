@@ -4,73 +4,10 @@
     <meta charset="UTF-8" />
     <title>Транскрипт лекции</title>
     <script src="https://cdn.socket.io/4.0.1/socket.io.min.js"></script>
-    <style>
-      body {
-        font-family: "Segoe UI", sans-serif;
-        background-color: #f4f4f4;
-        color: #333;
-        margin: 0;
-        padding: 2em;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-      }
-
-      h1 {
-        font-weight: 500;
-        margin-bottom: 1em;
-        color: #222;
-      }
-
-      button {
-        background-color: #0057e7;
-        color: white;
-        border: none;
-        padding: 10px 18px;
-        margin: 5px;
-        border-radius: 6px;
-        font-size: 16px;
-        cursor: pointer;
-        transition: background 0.2s ease;
-      }
-
-      button:disabled {
-        background-color: #cccccc;
-        cursor: not-allowed;
-      }
-
-      button:hover:not(:disabled) {
-        background-color: #0047c0;
-      }
-
-      #status {
-        margin-top: 20px;
-        font-size: 1rem;
-        font-weight: 500;
-        color: #666;
-      }
-
-      #partial {
-        margin-top: 1em;
-        font-style: italic;
-        color: #888;
-      }
-
-      #text {
-        max-width: 800px;
-        width: 100%;
-        margin-top: 2em;
-        background: white;
-        padding: 1em 1.5em;
-        border-radius: 8px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
-      }
-
-      #text p {
-        margin-bottom: 1em;
-        line-height: 1.5;
-      }
-    </style>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
   </head>
   <body>
     <h1>🎤 Транскрипт лекции</h1>
